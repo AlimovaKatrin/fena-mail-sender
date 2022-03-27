@@ -1,15 +1,14 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { StatsService } from '../stats/stats.service';
+import { StatsService } from './stats.service';
 
-@Controller('posts')
+@Controller()
 export class StatsController {
   constructor(private readonly statsService: StatsService) {}
 
-  @MessagePattern('send.email.stats')
-  getStats(@Payload() stats: any) {
-    console.log('StatsController getStats');
-
-    return this.statsService.getStats(stats);
+  @MessagePattern('get.stats')
+  sendEmail(@Payload() message) {
+    const { value } = message;
+    return this.statsService.getStats(value);
   }
 }

@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { getSocketData } from '../helper';
 
 export const useSocket = () => {
-  const socket = io('http://localhost:3100');
   const [message, setMessage] = useState(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    socket.on('connect', () => {
-      const engine = socket.io.engine;
+    socketRef.current = io('http://localhost:3100');
+    socketRef.current.on('connect', () => {
+      const engine = socketRef.current.io.engine;
       engine.on('message', message => {
         const data = getSocketData(message);
         if (data) {
@@ -17,7 +18,7 @@ export const useSocket = () => {
       });
     });
     return () => {
-      socket.disconnect();
+      socketRef.current.disconnect();
     };
   }, []);
   return { message };

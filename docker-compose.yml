@@ -45,6 +45,16 @@ services:
     volumes:
       - '.:/fena'
       - '/email-service/node_modules'
+
+  stats-service:
+    container_name: stats-service
+    build:
+      context: ./stats-service
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/fena'
+      - '/stats-service/node_modules'
+      
   api:
     container_name: api
     build:

@@ -3,7 +3,7 @@ import SendIcon from '@mui/icons-material/Send';
 
 export const Form = ({ handleChange, handleSubmit, input, isCorrectInput }) => {
   return (
-    <form className="amount-form" autocomplete="off" onSubmit={handleSubmit}>
+    <form className="amount-form" autoComplete="off" onSubmit={handleSubmit}>
       <TextField
         error={!isCorrectInput}
         fullWidth

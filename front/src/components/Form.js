@@ -14,7 +14,7 @@ export const Form = ({ handleChange, handleSubmit, input, isCorrectInput }) => {
         value={input}
         onChange={handleChange}
       />
-      <IconButton size="large" type="submit">
+      <IconButton size="large" type="submit" disabled={!isCorrectInput}>
         <SendIcon fontSize="large" />
       </IconButton>
     </form>

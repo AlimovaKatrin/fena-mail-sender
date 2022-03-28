@@ -28,3 +28,6 @@ export const getSocketData = message => {
 
   return JSON.parse(data);
 };
+
+export const sortDctionary = (jobsDictionary) => (x, y) =>
+  jobsDictionary[y].timestamp - jobsDictionary[x].timestamp;

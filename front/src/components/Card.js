@@ -8,7 +8,8 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.primary.main,
   },
   body: {
-    height: '8vh',
+    height: '12vh',
+    textAlign: 'center'
   },
 }));
 
@@ -20,9 +21,10 @@ export const Card = ({ mail }) => {
         <Grid
           container
           justifyContent="space-around"
+          direction="row"
           alignItems="center"
           className={classes.body}>
-          <Grid item xs={2}>
+          <Grid item xs={12}>
             <Typography>№ {mail?.jobId}</Typography>
           </Grid>
           <Grid item xs={3}>

@@ -1,31 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { Client, ClientKafka, Payload, Transport } from '@nestjs/microservices';
-import { IEmailStats } from 'src/const';
+import { Client, ClientKafka, Payload } from '@nestjs/microservices';
+import { KafkaTopics, microserviceStatsRecieverConfig } from 'src/const';
+import { EmailStats } from 'src/interfaces/email-stats.interface';
 
 @Injectable()
 export class StatsService {
-  @Client({
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        clientId: 'stats',
-        brokers: ['kafka:9092'],
-      },
-      consumer: {
-        groupId: 'stats-reciever',
-      },
-    },
-  })
+  @Client(microserviceStatsRecieverConfig)
   client: ClientKafka;
 
   async onModuleInit() {
-    this.client.subscribeToResponseOf('get.stats');
+    this.client.subscribeToResponseOf(KafkaTopics.getStats);
 
     await this.client.connect();
   }
-  getStats(@Payload() stats : IEmailStats) {
+  getStats(@Payload() stats: EmailStats) {
     this.client
-      .emit('get.stats', stats)
+      .emit(KafkaTopics.getStats, stats)
       .subscribe(() => console.log('Stats sended' + JSON.stringify(stats)));
   }
 }

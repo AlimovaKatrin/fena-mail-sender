@@ -1,4 +1,4 @@
-export const setEmailAmount = async (amount) => {
+export const setEmailAmount = async amount => {
   const respose = await fetch(`http://localhost:3100/email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json; charset=utf-8' },

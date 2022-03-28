@@ -4,7 +4,7 @@ import moment from 'moment';
 import { setEmailAmount } from './helper';
 import { useSocket } from './hooks/useSocket';
 import { Form } from './components/Form';
-import { List } from './components/List';
+import { Card } from './components/Card';
 
 import './App.css';
 import Container from '@mui/material/Container';
@@ -39,21 +39,27 @@ function App() {
   );
 
   const sendRequest = () => {
-    setEmailAmount(input).then(res => {
-      setInput('');
-      setJobsDictionary(prevState => ({
-        ...prevState,
-        [res]: {
-          timestamp: Date.now(),
-          emails: [
-            {
-              jobId: res,
-              amount: input,
-            },
-          ],
-        },
-      }));
-    });
+    setEmailAmount(input)
+      .then(res => {
+        setJobsDictionary(prevState => ({
+          ...prevState,
+          [res]: {
+            timestamp: Date.now(),
+            emails: [
+              {
+                jobId: res,
+                amount: input,
+              },
+            ],
+          },
+        }));
+      })
+      .catch(err => {
+        console.log(err.message);
+      })
+      .finally(() => {
+        setInput('');
+      });
   };
 
   const handleSubmit = event => {
@@ -77,20 +83,21 @@ function App() {
         timePassed: moment(socketMessage?.timestamp).calendar(),
       };
       setJobsDictionary(prevState => {
-        if (prevState[socketMessage.jobId]) {
+        const { jobId } = socketMessage;
+        if (prevState[jobId]) {
           return {
             ...prevState,
-            [socketMessage.jobId]: {
-              ...prevState[socketMessage.jobId],
-              emails: [email],
+            [jobId]: {
+              ...prevState[jobId],
+              email,
             },
           };
         } else {
           return {
             ...prevState,
-            [socketMessage.jobId]: {
+            [jobId]: {
               timestamp: Date.now(),
-              emails: [email],
+              email,
             },
           };
         }
@@ -113,13 +120,15 @@ function App() {
           <Grid item xs={6}>
             <Paper className="column" elevation={5}>
               <Grid container rowSpacing={4} alignItems="center">
-                {jobIds?.map(jobId => (
-                  <List
-                    key={`job-${jobId}`}
-                    jobId={jobId}
-                    dictionary={jobsDictionary}
-                  />
-                ))}
+                {jobIds?.map(jobId => {
+                  const { email } = jobsDictionary[jobId];
+                  return (
+                    <Card
+                      key={`${jobId}-${email.timestamp || Math.random()}`}
+                      mail={email}
+                    />
+                  );
+                })}
               </Grid>
             </Paper>
           </Grid>

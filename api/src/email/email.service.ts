@@ -24,7 +24,7 @@ export class EmailService {
     await this.client.connect();
   }
 
-  sendEmail(@Payload() amount) {
+  sendEmail(@Payload() amount : number) {
     const id = Math.floor(Math.random() * (1 - 10000) + 10000);
     this.client.emit('send.new.email', { amount, id });
     return id;

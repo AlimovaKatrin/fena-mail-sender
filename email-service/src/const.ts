@@ -1,5 +1,3 @@
-import { Hash } from "crypto";
-
 export const mockedSending = (emailIndex) =>
   new Promise((res, rej) => {
     console.log('Promise pending .... ');
@@ -7,6 +5,12 @@ export const mockedSending = (emailIndex) =>
   });
 
 export interface IEmailJob {
-  id: Hash;
+  id: number;
   amount: number;
+}
+export interface IEmailStats {
+  jobId: number,
+  timestamp: Date,
+  amount: number,
+  status: string,
 }

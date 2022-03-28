@@ -1,4 +1,4 @@
-export const makeRequest = async (amount) => {
+export const setEmailAmount = async amount => {
   const respose = await fetch(`http://localhost:3100/email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -24,7 +24,7 @@ export const getSocketData = message => {
   if (!Array.isArray(parsedMessage) || !parsedMessage[1]) {
     return null;
   }
-  const [type, data] = parsedMessage;
+  const [, data] = parsedMessage;
 
   return JSON.parse(data);
 };

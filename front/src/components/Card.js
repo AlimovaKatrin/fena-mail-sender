@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { Grid, Typography, Paper } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -13,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const Card = memo(({ mail }) => {
+export const Card = ({ mail }) => {
   const classes = useStyles();
   return (
     <Grid item xs={12} className={classes.card}>
@@ -30,7 +29,7 @@ export const Card = memo(({ mail }) => {
             <Typography>{mail.timePassed}</Typography>
           </Grid>
           <Grid item xs={3}>
-            {mail?.status ? (
+            {mail.status ? (
               <Typography>{mail.status}</Typography>
             ) : (
               <CircularProgress size={20} />
@@ -40,4 +39,4 @@ export const Card = memo(({ mail }) => {
       </Paper>
     </Grid>
   );
-});
+};

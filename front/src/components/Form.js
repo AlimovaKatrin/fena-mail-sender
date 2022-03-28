@@ -10,7 +10,7 @@ export const Form = ({ handleChange, handleSubmit, input, isCorrectInput }) => {
         name="amount"
         label="Amount of letters"
         variant="standard"
-        helperText="Please insert numbers"
+        helperText="Please insert digit numbers"
         value={input}
         onChange={handleChange}
       />

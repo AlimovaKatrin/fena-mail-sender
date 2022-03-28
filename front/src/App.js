@@ -29,7 +29,8 @@ function App() {
   const { message: socketMessage } = useSocket();
   const [input, setInput] = useState('');
   const [jobsDictionary, setJobsDictionary] = useState({});
-  const isCorrectInput = useMemo(() => !isNaN(Number(input)), [input]);
+  const isCorrectInput = useMemo(() => Number(input) % 1 === 0 && !isNaN(Number(input)) && !input.startsWith('0'), [input]);
+
   const jobIds = useMemo(
     () =>
       Object.keys(jobsDictionary).sort(
@@ -124,7 +125,7 @@ function App() {
                   const { email } = jobsDictionary[jobId];
                   return (
                     <Card
-                      key={`${jobId}-${email.timestamp || Math.random()}`}
+                      key={`${jobId}-${email?.timestamp || Math.random()}`}
                       mail={email}
                     />
                   );

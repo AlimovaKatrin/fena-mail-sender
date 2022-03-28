@@ -23,13 +23,13 @@ export const Card = ({ mail }) => {
           alignItems="center"
           className={classes.body}>
           <Grid item xs={2}>
-            <Typography>№ {mail.jobId}</Typography>
+            <Typography>№ {mail?.jobId}</Typography>
           </Grid>
           <Grid item xs={3}>
-            <Typography>{mail.timePassed}</Typography>
+            <Typography>{mail?.timePassed}</Typography>
           </Grid>
           <Grid item xs={3}>
-            {mail.status ? (
+            {mail?.status ? (
               <Typography>{mail.status}</Typography>
             ) : (
               <CircularProgress size={20} />

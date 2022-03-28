@@ -99,6 +99,7 @@ function App() {
       const { status } = email;
       const [current, total] = status.split('of');
       +current < +total && setBlockSending(true);
+      +current === +total && setBlockSending(false);
       setJobsDictionary(prevState => {
         const { jobId } = socketMessage;
         if (prevState[jobId]) {

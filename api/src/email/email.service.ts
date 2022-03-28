@@ -1,32 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { Client, ClientKafka } from '@nestjs/microservices';
 import { Payload } from '@nestjs/microservices';
-import { Client, ClientKafka, Transport } from '@nestjs/microservices';
+import { randomUUID } from 'crypto';
+import { KafkaTopics, microserviceEmailConfig } from 'src/const';
 
 @Injectable()
 export class EmailService {
-  @Client({
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        clientId: 'email',
-        brokers: ['kafka:9092'],
-      },
-      consumer: {
-        groupId: 'email',
-      },
-    },
-  })
+  @Client(microserviceEmailConfig)
   client: ClientKafka;
 
   async onModuleInit() {
-    this.client.subscribeToResponseOf('send.new.email');
+    this.client.subscribeToResponseOf(KafkaTopics.sendNewEmail);
 
     await this.client.connect();
   }
-
-  sendEmail(@Payload() amount : number) {
-    const id = Math.floor(Math.random() * (1 - 10000) + 10000);
-    this.client.emit('send.new.email', { amount, id });
+  sendEmail(@Payload() amount: number) {
+    const id = randomUUID();
+    this.client.emit(KafkaTopics.sendNewEmail, { amount, id });
     return id;
   }
 }

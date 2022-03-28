@@ -1,21 +1,15 @@
-import {NestFactory} from '@nestjs/core';
-import {AppModule} from './app.module';
-import {MicroserviceOptions, Transport} from "@nestjs/microservices";
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { MicroserviceOptions } from '@nestjs/microservices';
+import { microserviceEmailConfig } from './const';
 
 async function bootstrap() {
-    const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-        transport: Transport.KAFKA,
-        options: {
-            client: {
-                brokers: ['kafka:9092'],
-            },
-            consumer: {
-                groupId: 'email',
-            }
-        }
-    });
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    microserviceEmailConfig,
+  );
 
-    app.listen()
+  app.listen();
 }
 
 bootstrap();

@@ -1,40 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { Client, ClientKafka, Transport, Payload } from '@nestjs/microservices';
-import { IEmailJob, mockedSending } from '../const';
+import { Client, ClientKafka, Payload } from '@nestjs/microservices';
+import { EmailJob } from 'src/interfaces/email-job.interface';
+import { KafkaTopics, microserviceStatsConfig, mockedSending } from '../const';
 
 @Injectable()
 export class SenderService {
-  @Client({
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        clientId: 'stats',
-        brokers: ['kafka:9092'],
-      },
-      consumer: {
-        groupId: 'stats',
-      },
-    },
-  })
+  @Client(microserviceStatsConfig)
   client: ClientKafka;
 
   async onModuleInit() {
-    this.client.subscribeToResponseOf('send.email.stats');
+    this.client.subscribeToResponseOf(KafkaTopics.sendStats);
 
     await this.client.connect();
   }
 
-  async sendEmail(@Payload() job : IEmailJob) {
+  async sendEmail(@Payload() job: EmailJob) {
     const { amount, id } = job;
-    for (let index = 1; index <= Number(amount); index++) {
-      const emailIndex = await mockedSending(index);
+    for (let counter = 1; counter <= +amount; counter++) {
+      const emailCountOrder = await mockedSending(counter);
       this.client
-        .send('send.email.stats', {
+        .send(KafkaTopics.sendStats, {
           jobId: id,
           timestamp: Date.now(),
           amount,
-          status: `${emailIndex} of ${amount}`,
-        }).subscribe(() => console.log(`Sended ${emailIndex} of ${amount}`))
+          status: `${emailCountOrder} of ${amount}`,
+        })
+        .subscribe(() => console.log(`Sended ${emailCountOrder} of ${amount}`));
     }
   }
 }

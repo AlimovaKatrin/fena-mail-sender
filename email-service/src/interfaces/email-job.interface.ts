@@ -1,4 +1,6 @@
+import { Hash } from "crypto";
+
 export interface EmailJob {
-  id: number;
+  id: Hash;
   amount: number;
 }

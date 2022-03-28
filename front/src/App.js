@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import moment from 'moment';
 
-import { setEmailAmount } from './helper';
+import { setEmailAmount, sortDctionary } from './helper';
 import { useSocket } from './hooks/useSocket';
 import { Form } from './components/Form';
 import { Card } from './components/Card';
@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import { blue } from '@mui/material/colors';
 import { Grid } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 
 const fenaTheme = createTheme({
   palette: {
@@ -29,38 +30,42 @@ function App() {
   const { message: socketMessage } = useSocket();
   const [input, setInput] = useState('');
   const [jobsDictionary, setJobsDictionary] = useState({});
-  const isCorrectInput = useMemo(() => Number(input) % 1 === 0 && !isNaN(Number(input)) && !input.startsWith('0'), [input]);
-
+  const [isBlockSending, setBlockSending] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const isCorrectInput = useMemo(
+    () => +input % 1 === 0 && !isNaN(+input) && !input.startsWith('0'),
+    [input]
+  );
+  const sortByDate = sortDctionary(jobsDictionary);
   const jobIds = useMemo(
-    () =>
-      Object.keys(jobsDictionary).sort(
-        (x, y) => jobsDictionary[y].timestamp - jobsDictionary[x].timestamp
-      ),
+    () => Object.keys(jobsDictionary).sort(sortByDate),
     [jobsDictionary]
   );
 
   const sendRequest = () => {
-    setEmailAmount(input)
-      .then(res => {
-        setJobsDictionary(prevState => ({
-          ...prevState,
-          [res]: {
-            timestamp: Date.now(),
-            emails: [
-              {
-                jobId: res,
-                amount: input,
-              },
-            ],
-          },
-        }));
-      })
-      .catch(err => {
-        console.log(err.message);
-      })
-      .finally(() => {
-        setInput('');
-      });
+    !isBlockSending &&
+      setEmailAmount(input)
+        .then(res => {
+          setJobsDictionary(prevState => ({
+            ...prevState,
+            [res]: {
+              timestamp: Date.now(),
+              emails: [
+                {
+                  jobId: res,
+                  amount: input,
+                },
+              ],
+            },
+          }));
+        })
+        .catch(err => {
+          console.log(err.message);
+        })
+        .finally(() => {
+          setInput('');
+        });
+    isBlockSending && handleOpenSnackbar();
   };
 
   const handleSubmit = event => {
@@ -77,12 +82,23 @@ function App() {
     [setInput]
   );
 
+  const handleCloseSnackbar = useCallback(() => {
+    setOpenSnackbar(false);
+  }, [setOpenSnackbar]);
+
+  const handleOpenSnackbar = useCallback(() => {
+    setOpenSnackbar(true);
+  }, [setOpenSnackbar]);
+
   useEffect(() => {
     if (socketMessage) {
       const email = {
         ...socketMessage,
         timePassed: moment(socketMessage?.timestamp).calendar(),
       };
+      const { status } = email;
+      const [current, total] = status.split('of');
+      +current < +total && setBlockSending(true);
       setJobsDictionary(prevState => {
         const { jobId } = socketMessage;
         if (prevState[jobId]) {
@@ -134,6 +150,12 @@ function App() {
             </Paper>
           </Grid>
         </Grid>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          message="Please wait, emails are sending..."
+        />
       </ThemeProvider>
     </Container>
   );

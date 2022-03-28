@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Client, ClientKafka, Payload, Transport } from '@nestjs/microservices';
+import { IEmailStats } from 'src/const';
 
 @Injectable()
 export class StatsService {
@@ -22,10 +23,9 @@ export class StatsService {
 
     await this.client.connect();
   }
-  getStats(@Payload() stats) {
-    const { value } = stats;
+  getStats(@Payload() stats : IEmailStats) {
     this.client
-      .emit('get.stats', value)
-      .subscribe(() => console.log('Stats sended' + value));
+      .emit('get.stats', stats)
+      .subscribe(() => console.log('Stats sended' + JSON.stringify(stats)));
   }
 }

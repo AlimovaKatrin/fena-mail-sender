@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Client, ClientKafka, Transport, Payload } from '@nestjs/microservices';
-import { mockedSending } from '../const';
+import { IEmailJob, mockedSending } from '../const';
 
 @Injectable()
 export class SenderService {
@@ -24,11 +24,8 @@ export class SenderService {
     await this.client.connect();
   }
 
-  async sendEmail(@Payload() message) {
-    const {
-      value: { amount, id },
-    } = message;
-
+  async sendEmail(@Payload() job : IEmailJob) {
+    const { amount, id } = job;
     for (let index = 1; index <= Number(amount); index++) {
       const emailIndex = await mockedSending(index);
       this.client

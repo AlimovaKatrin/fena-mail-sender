@@ -8,7 +8,8 @@ export class SenderController {
   constructor(private emailService: SenderService) {}
 
   @MessagePattern('send.new.email')
-  sendEmail(@Payload() message ) {
-    return this.emailService.sendEmail(message);
+  sendEmail(@Payload() message : { value : IEmailJob } ) {
+    const { value } = message;
+    return this.emailService.sendEmail(value);
   }
 }

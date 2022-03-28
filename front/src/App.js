@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import moment from 'moment';
 
-import { makeRequest } from './helper';
+import { setEmailAmount } from './helper';
 import { useSocket } from './hooks/useSocket';
 import { Form } from './components/Form';
 import { List } from './components/List';
@@ -38,8 +38,8 @@ function App() {
     [jobsDictionary]
   );
 
-  const sendEmail = () => {
-    makeRequest(input).then(res => {
+  const sendRequest = () => {
+    setEmailAmount(input).then(res => {
       setInput('');
       setJobsDictionary(prevState => ({
         ...prevState,
@@ -59,13 +59,16 @@ function App() {
   const handleSubmit = event => {
     event.preventDefault();
     if (isCorrectInput) {
-      sendEmail();
+      sendRequest();
     }
   };
 
-  const handleChange = ({ target: { value } }) => {
-    setInput(value);
-  };
+  const handleChange = useCallback(
+    ({ target: { value } }) => {
+      setInput(value);
+    },
+    [setInput]
+  );
 
   useEffect(() => {
     if (socketMessage) {
@@ -79,9 +82,7 @@ function App() {
             ...prevState,
             [socketMessage.jobId]: {
               ...prevState[socketMessage.jobId],
-              emails: [
-                email,
-              ],
+              emails: [email],
             },
           };
         } else {
